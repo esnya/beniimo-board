@@ -1,0 +1,116 @@
+/********** Piece **********/
+.piece {
+    width: 30px;
+    height: 30px;
+    border-radius: 23px;
+    display: inline-block;
+    border: transparent 1px solid;
+    box-shadow: 2px 5px 5px rgba(0, 0, 0, 0.5);
+    background-size: cover;
+}
+
+.piece[data-color=white] { background-color: white; border-color: black; }
+.piece[data-color=lightgrey] { background-color: lightgrey; border-color: black; }
+.piece[data-color=grey] { background-color: grey;  border-color: black;}
+.piece[data-color=darkgrey] { background-color: darkgrey;  border-color: black;}
+.piece[data-color=black] { background-color: black;  border-color: white;}
+.piece[data-color=red] { background-color: red;  border-color: black;}
+.piece[data-color=blue] { background-color: blue;  border-color: black;}
+.piece[data-color=green] { background-color: green;  border-color: black;}
+.piece[data-color=yellow] { background-color: yellow;  border-color: black;}
+.piece[data-color=pink] { background-color: pink;  border-color: black;}
+.piece[data-color=lightgreen] { background-color: lightgreen;  border-color: black;}
+.piece[data-color=lightblue] { background-color: lightblue;  border-color: black;}
+
+
+.piece.icon {
+    position: relative;
+    border-width: 4px;
+}
+
+.piece.icon .data {
+    position: absolute;
+    opacity: 0;
+    top: 18px;
+    left: 34px;
+    text-align: left;
+    transition: opacity 0.4s ease-in-out;
+    white-space: nowrap;
+    border-bottom: 1px solid;
+    border-color: inherit;
+    background: white;
+}
+    
+.piece.icon:hover .data {
+    opacity: 1;
+}
+
+/********** Button **********/
+.btn {
+    padding: 5px;
+    text-align: center;
+}
+.btn > svg {
+    width: 16px;
+    height: 16px;
+}
+.btn > svg > g {
+    transform: translate(8px, 8px);
+}
+.btn > svg > g rect,
+.btn > svg > g polygon {
+    fill: dimgray;
+}
+
+/********** Client Layout **********/
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body {
+    display: flex;
+    flex-direction: column;
+}
+body > main {
+    flex: 1 1 auto;
+    overflow: auto;
+}
+body > header,
+body > main,
+body > footer {
+    text-align: center;
+}
+
+/********** Board **********/
+main {
+    background-color: lightgrey;
+}
+#board {
+    background-color: white;
+    background-repeat: no-repeat no-repeat;
+    background-size: contain;
+}
+
+/********** Board Animation **********/
+#board {
+    transition: all 0.2s ease-in-out;
+}
+
+/********** Pieces on Board **********/
+#board {
+    display: inline-block;
+    position: relative;
+    z-index: 0;
+}
+#board .piece {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+#board .piece.dragging {
+    z-index: -1;
+}
+
