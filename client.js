@@ -52,7 +52,7 @@ $(function () {
     socket.on('piece', function (id, x, y, color, character_url) {
         var piece = $('#board .piece[data-id="' + id + '"]');
         if (piece.length == 0) {
-            var piece = $('<div>').addClass('piece').attr('draggable', 'true').attr('data-id', id).appendTo('#board');
+            var piece = $('<div>').addClass('piece').attr('data-id', id).appendTo('#board');
             if (character_url) {
                 $.getJSON(character_url).done(function (data) {
                     var icon = data.icon || data.portrait;
@@ -79,6 +79,8 @@ $(function () {
     });
 
     ////////// DOM Event //////////
+    var dragging = null;
+
     $('[data-action]').click(function (event) {
         var button = $(this);
         switch (button.data('action')) {
@@ -98,18 +100,24 @@ $(function () {
         return dataTransfer.getData(type);
     };
     $('#board').bind({
+        mousemove: function (event) {
+            if (draggingPiece) {
+                var offset = draggingPiece.offset();
+                var boff = $('#board').offset();
+                var x = event.originalEvent.pageX - boff.left - draggingPiece.width() / 2 * zoom;
+                var y = event.originalEvent.pageY - boff.top - draggingPiece.height() / 2 * zoom;
+                x /= zoom, y /= zoom;
+                socket.emit('piece', draggingPiece.data('id'), x, y);
+            }
+        },
+        mouseleave: function (event) {
+            draggingPiece = null;
+        },
+        mouseup: function (event) {
+            draggingPiece = null;
+        },
         dragover: function (event) {
             event.preventDefault();
-            //var id = event.originalEvent.dataTransfer.getData('text/html').split('/')[1];
-            var id = getData(event, 'text/html').split('/')[1];
-            var piece = $('#board .piece[data-id="' + id + '"]');
-            if (piece.length) {
-                var offset = $(this).offset();
-                var x = (event.originalEvent.pageX - offset.left - 8) / zoom;
-                var y = (event.originalEvent.pageY - offset.top - 8) / zoom;
-                //piece.css('transform', 'translate(' + x + 'px, ' + y + 'px)');
-                socket.emit('piece', id, x, y);
-            }
         },
         drop: function (event) {
             event.preventDefault();
@@ -126,9 +134,10 @@ $(function () {
                     reader.readAsDataURL(file);
                 }
             } else {
-                var offset = $(this).offset();
-                var x = (event.originalEvent.pageX - offset.left - 8) / zoom;
-                var y = (event.originalEvent.pageY - offset.top - 8) / zoom;
+                var piece = $(this);
+                var offset = piece.offset();
+                var x = (event.originalEvent.pageX - offset.left - piece.width() / 2) / zoom;
+                var y = (event.originalEvent.pageY - offset.top - piece.height() / 2) / zoom;
                 var data = event.originalEvent.dataTransfer.getData('text/html').split('/');
                 socket.emit('piece', data[1], x, y, data[0]);
             }
@@ -138,13 +147,17 @@ $(function () {
     $('#add-character').submit(function () {
         var character_url = $(this).find('input[type=url]').val();
         $.getJSON(character_url).done(function (data) {
-            var color = data.color || makeColor(data.name + data.user_id);
+            var color = data.color || makeColor(data.name + user.id);
             socket.emit('piece', -1, 0, 0, color, character_url);
         });
     });
 
+    var prev;
     var initPiece = function (target) {
         target.bind({
+            mousedown: function (event) {
+                draggingPiece = $(this).appendTo('#board');
+            },
             dragstart: function (event) {
                 var piece = $(this);
                 piece.addClass('dragging');
