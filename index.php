@@ -32,18 +32,18 @@ var user = { id: '<?= $user->userid ?>', name: '<?= $user->name ?>' };
         <div id=board></div>
     </main>
     <footer>
-        <div draggable=true class=piece data-color=white></div>
-        <div draggable=true class=piece data-color=black></div>
-        <div draggable=true class=piece data-color=grey></div>
-        <div draggable=true class=piece data-color=darkgrey></div>
-        <div draggable=true class=piece data-color=lightgrey></div>
-        <div draggable=true class=piece data-color=red></div>
-        <div draggable=true class=piece data-color=blue></div>
-        <div draggable=true class=piece data-color=green></div>
-        <div draggable=true class=piece data-color=yellow></div>
-        <div draggable=true class=piece data-color=pink></div>
-        <div draggable=true class=piece data-color=lightgreen></div>
-        <div draggable=true class=piece data-color=lightblue></div>
+        <div draggable=true class="piece template" data-color=white></div>
+        <div draggable=true class="piece template" data-color=black></div>
+        <div draggable=true class="piece template" data-color=grey></div>
+        <div draggable=true class="piece template" data-color=darkgrey></div>
+        <div draggable=true class="piece template" data-color=lightgrey></div>
+        <div draggable=true class="piece template" data-color=red></div>
+        <div draggable=true class="piece template" data-color=blue></div>
+        <div draggable=true class="piece template" data-color=green></div>
+        <div draggable=true class="piece template" data-color=yellow></div>
+        <div draggable=true class="piece template" data-color=pink></div>
+        <div draggable=true class="piece template" data-color=lightgreen></div>
+        <div draggable=true class="piece template" data-color=lightblue></div>
         <br>
         <form id=add-character onsubmit="return false">
             <input type="url" placeholder="Character URL">

@@ -134,10 +134,11 @@ $(function () {
                     reader.readAsDataURL(file);
                 }
             } else {
-                var piece = $(this);
-                var offset = piece.offset();
-                var x = (event.originalEvent.pageX - offset.left - piece.width() / 2) / zoom;
-                var y = (event.originalEvent.pageY - offset.top - piece.height() / 2) / zoom;
+                var piece = $('.piece.template:first-child');
+                var boff = $('#board').offset();
+                var x = event.originalEvent.pageX - boff.left - piece.width() / 2 * zoom;
+                var y = event.originalEvent.pageY - boff.top - piece.height() / 2 * zoom;
+                x /= zoom, y /= zoom;
                 var data = event.originalEvent.dataTransfer.getData('text/html').split('/');
                 socket.emit('piece', data[1], x, y, data[0]);
             }
@@ -152,21 +153,21 @@ $(function () {
         });
     });
 
-    var prev;
     var initPiece = function (target) {
         target.bind({
             mousedown: function (event) {
                 draggingPiece = $(this).appendTo('#board');
-            },
-            dragstart: function (event) {
-                var piece = $(this);
-                piece.addClass('dragging');
-                event.originalEvent.dataTransfer.setData('text/html', piece.data('color') + '/' + piece.data('id'));
-            },
-            dragend: function (event) {
-                $(this).removeClass('dragging');
             }
         });
     };
-    initPiece($('.piece'));
+    $('.piece.template').bind({
+        dragstart: function (event) {
+            var piece = $(this);
+            piece.addClass('dragging');
+            event.originalEvent.dataTransfer.setData('text/html', piece.data('color') + '/' + piece.data('id'));
+        },
+        dragend: function (event) {
+            $(this).removeClass('dragging');
+        }
+    });
 });
