@@ -97,8 +97,8 @@ $(function () {
         elm.filter('[type=checkbox]').prop('checked', value);
         switch (key) {
             case 'title':
-                document.title = value + room.id;
-                $('.title').text(document.title);
+                document.title = value + ' - Beniimo Board';
+                $('.title').text(value);
                 break;
             case 'lock':
                 $('#form-config input').prop('disabled', value && user.id != room.user.id);
