@@ -12,6 +12,9 @@ body {
     display: flex;
     flex-direction: column;
 
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
+
     #toolbar {
         padding: 6px 0;
         .btn {
@@ -21,6 +24,7 @@ body {
 
     main {
         flex: 1 1 auto;
+        -webkit-flex: 1 1 auto;
         overflow: auto;
         background-color: lightgrey;
 
@@ -49,8 +53,10 @@ body {
         }
     }
 
-    footer {
-        padding-top: 6px;
+
+    footer, nav {
+        flex: 0 0 auto;
+        -webkit-flex: 0 0 auto;
     }
 
     main, footer {
