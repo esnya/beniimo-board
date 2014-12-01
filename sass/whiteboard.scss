@@ -1,0 +1,97 @@
+// Mixins
+@import "components/prefixer";
+@import "components/mixins";
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+
+    #toolbar {
+        padding: 6px 0;
+        .btn {
+            margin-bottom: -6px;
+        }
+    }
+
+    main {
+        flex: 1 1 auto;
+        overflow: auto;
+        background-color: lightgrey;
+
+        #board {
+            background-color: white;
+            background-repeat: no-repeat no-repeat;
+            @include background-size(contain);
+
+            @include transition(all 0.2s ease-in-out); 
+
+            display: inline-block;
+            position: relative;
+
+            z-index: 50;
+
+            .piece {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .layer-grid {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+
+    footer {
+        padding-top: 6px;
+    }
+
+    main, footer {
+        text-align: center;
+    }
+}
+
+.piece {
+    @include box-shadow-2(0 12px 15px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19));
+
+    @include background-size(cover);
+    @include border-radius(23px);
+    border: black 1px solid;
+
+    display: inline-block;
+
+    height: 30px;
+    width: 30px;
+
+    z-index: 100;
+
+    @include transition(all 0.05s ease-in-out); 
+
+    &.icon {
+        border-width: 4px;
+    }
+}
+
+.material-tooltip {
+    margin-top: -10px;
+}
+
+.btn-floating {
+    border: none;
+}
+
+.btn-icon {
+    text-align: center;
+    padding: 0;
+
+    i {
+        margin: 0 7.5px;
+    }
+}

@@ -29,19 +29,92 @@ $(function () {
         room.user = user;
     });
 
+    var gridInterval;
+    var drawGrid = function (width, height) {
+        if (gridInterval && gridInterval > 0) {
+            var borad = $('#board');
+
+            width = width || borad.width();
+            height = height || borad.height();
+
+            console.log(width, height, gridInterval);
+
+            var grid = borad.find('.layer-grid').attr('width', width).attr('height', height);
+            var ctx = grid[0].getContext('2d');
+            
+            console.log(grid.attr('width'), grid.attr('height'));
+
+            ctx.strokeStyle = 'rgb(0, 0, 0);';
+            ctx.fillStyle = 'rgb(0, 0, 0);';
+            ctx.globalAlpha = 0.5;
+
+            ctx.beginPath();
+            for (var x = 0; x < width; x += gridInterval) {
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+            }
+            for (var y = 0; y < height; y += gridInterval) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+
+            ctx.textAlign = 'center';
+            for (var x = 0; x < width; x += gridInterval) {
+                var n = Math.floor(x / gridInterval);
+                var c = 'a'.charCodeAt(0) + n % 26;
+                var codes = [];
+                for (var i = 0; i < Math.floor(n / 26) + 1; ++i) {
+                    console.log(i);
+                    codes.push(c);
+                }
+
+                ctx.textBaseline = 'top';
+                ctx.fillText(String.fromCharCode.apply(String, codes), x + gridInterval / 2, 0);
+
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(String.fromCharCode.apply(String, codes), x + gridInterval / 2, height);
+            }
+
+            ctx.textBaseline = 'middle';
+            for (var y = 0; y < height; y += gridInterval) {
+                var n = ' ' + Math.floor(y / gridInterval) + ' ';
+
+                ctx.textAlign = 'left';
+                ctx.fillText(n, 0, y + gridInterval / 2);
+
+                ctx.textAlign = 'right';
+                ctx.fillText(n, width, y + gridInterval / 2);
+            }
+        }
+    };
+
     socket.on('setting', function (key, value) {
-        var elm = $('[data-setting="' + key + '"]').val(value);
+        var selector = '#input-config-' + key;
+        var elm = $(selector);
+        elm.filter(':not([type=checkbox])').val(value);
+        elm.filter('[type=checkbox]').prop('checked', value);
         switch (key) {
             case 'title':
-                document.title = value + room.id + ' : Whiteboard';
+                document.title = value + room.id;
+                $('.title').text(document.title);
                 break;
-            case 'readonly':
-                $('[data-setting]').prop('disabled', value && user.id != room.user.id);
-                elm.filter('input[type=checkbox]').prop('checked', value);
+            case 'lock':
+                $('#form-config input').prop('disabled', value && user.id != room.user.id);
                 break;
             case 'width':
             case 'height':
                 $('#board').css(key, value + 'px');
+                drawGrid(key == 'width' ? +value : null, key == 'height' ? +value : null);
+                break;
+            case 'gridinterval':
+                gridInterval = +value;
+                drawGrid();
+                break;
+            case 'grid':
+                if (value) $('#board .layer-grid').fadeIn();
+                else $('#board .layer-grid').fadeOut();
                 break;
             case 'background':
                 $('#board').css('background-image', value ? 'url(' + value + ')' : '');
@@ -52,22 +125,34 @@ $(function () {
     socket.on('piece', function (id, x, y, color, character_url) {
         var piece = $('#board .piece[data-id="' + id + '"]');
         if (piece.length == 0) {
-            var piece = $('<div>').addClass('piece').attr('data-id', id).appendTo('#board');
+            var piece = $('<div>')
+                .addClass('piece')
+                .attr('data-id', id)
+                .mousedown(function () {
+                    draggingPiece = $(this).appendTo('#board .layer-pieces');
+                })
+                .appendTo('#board');
             if (character_url) {
                 $.getJSON(character_url).done(function (data) {
                     var icon = data.icon || data.portrait;
                     if (icon) {
                         piece.css('background-image', 'url(' + icon + ')');
                     }
-                    piece.css('border-color', piece.data('color'));
-                    piece.addClass('icon');
-                    piece.append($('<div class="data">').text(data.name));
+                    piece
+                        .css({
+                            'border-color': piece.data('color'),
+                            'background-color': 'white'
+                        })
+                        .addClass('icon')
+                        .addClass('tooltipped')
+                        .attr('data-position', 'bottom')
+                        .attr('data-tooltip', data.name)
+                        .tooltip({delay: 10});
                 });
             }
-            initPiece(piece);
         }
         if (color) {
-            piece.attr('data-color', color);
+            piece.css('background-color', color);
         }
         piece.css('transform', 'translate(' + x + 'px, ' + y + 'px)');
     });
@@ -78,10 +163,18 @@ $(function () {
         socket.emit('join', user, room_id);
     });
 
+    socket.on('disconnect', function () {
+        $('#board .piece').remove();
+        document.title = 'Beniimoo Board';
+        $('.title').text(document.title);
+        $('input').val('');
+    });
+
     ////////// DOM Event //////////
     var dragging = null;
 
     $('[data-action]').click(function (event) {
+        event.preventDefault();
         var button = $(this);
         switch (button.data('action')) {
             case 'zoom':
@@ -90,15 +183,16 @@ $(function () {
                 break;
         }
     });
-    $('#setting input').change(function (event) {
+    $('#form-config input').change(function (event) {
         var input = $(this);
-        socket.emit('setting', input.data('setting'), input.is('[type=checkbox]') ? input.prop('checked') : input.val());
+        socket.emit('setting', input.attr('name'), input.is('[type=checkbox]') ? input.prop('checked') : input.val());
     });
 
     var getData = function (event, type) {
         var dataTransfer = event.dataTransfer || event.originalEvent.dataTransfer;
         return dataTransfer.getData(type);
     };
+
     $('#board').bind({
         mousemove: function (event) {
             if (draggingPiece) {
@@ -153,13 +247,12 @@ $(function () {
         });
     });
 
-    var initPiece = function (target) {
-        target.bind({
-            mousedown: function (event) {
-                draggingPiece = $(this).appendTo('#board');
-            }
+    $('[href="#modal-config"]').click(function () {
+        $('#form-config input').each(function () {
+            $(this).trigger('focus');
         });
-    };
+    });
+
     $('.piece.template').bind({
         dragstart: function (event) {
             var piece = $(this);
@@ -169,5 +262,8 @@ $(function () {
         dragend: function (event) {
             $(this).removeClass('dragging');
         }
+    }).each(function () {
+        var piece = $(this);
+        piece.css('background-color', piece.data('color'));
     });
 });

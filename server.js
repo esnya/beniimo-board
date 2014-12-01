@@ -22,9 +22,11 @@ var Room = function (user) {
     this.width = 600;
     this.height = 400;
 
+    this.gridinterval = 50;
+
     console.log('New room: ', this.id);
 };
-Room.dataFields = ['title', 'width', 'height', 'readonly', 'background'];
+Room.dataFields = ['title', 'width', 'height', 'lock', 'background', 'grid', 'gridinterval'];
 Room.rooms = {};
 Room.getRoom = function (user, room_id) {
     if (room_id && (room_id in Room.rooms)) {
@@ -49,7 +51,7 @@ Room.prototype.release = function () {
     }.bind(this), 60 * 1000);
 };
 Room.prototype.canModify = function (user) {
-    return user && (!this.readonly || this.user.id == user.id);
+    return user && (!this.lock || this.user.id == user.id);
 };
 
 ////////// Server //////////
