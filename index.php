@@ -77,9 +77,6 @@ $user = user::getCurrentUser();
                 <!-- .nav-wrapper -->
                 <div class="nav-wrapper">
                     <a class="brand-logo title" href="#">Beniimo Board</a>
-                    <ul id="nav-mobile" class="right side-nav">
-                    <li>&nbsp;</li>
-                    </ul>
                 </div>
                 <!-- /.nav-wrapper -->
             </div>

@@ -8,6 +8,10 @@ html, body {
     overflow: hidden;
 }
 
+nav .brand-logo {
+    position: static;
+}
+
 body {
     display: flex;
     flex-direction: column;
@@ -99,5 +103,11 @@ body {
 
     i {
         margin: 0 7.5px;
+    }
+}
+
+.modal {
+    .input-field {
+        margin-bottom: 20px;
     }
 }
