@@ -21,12 +21,11 @@ var Room = function (user) {
     this.title = 'Whiteboard';
     this.width = 600;
     this.height = 400;
-
     this.gridinterval = 50;
 
     console.log('New room: ', this.id);
 };
-Room.dataFields = ['title', 'width', 'height', 'lock', 'background', 'grid', 'gridinterval'];
+Room.dataFields = ['title', 'width', 'height', 'lock', 'grid', 'gridinterval'];
 Room.rooms = {};
 Room.getRoom = function (user, room_id) {
     if (room_id && (room_id in Room.rooms)) {
@@ -90,6 +89,10 @@ var server = io.sockets.on('connection', function (socket) {
             room.pieces.forEach(function (piece) {
                 socket.emit('piece', piece.id, piece.x, piece.y, piece.color, piece.character_url);
             });
+
+            if (room.background) {
+                socket.emit('background', room.background.data, room.background.name, room.background.type);
+            }
         }
     });
 
@@ -125,6 +128,13 @@ var server = io.sockets.on('connection', function (socket) {
                 piece.character_url = character_url;
             }
             server.to(room.id).emit('piece', piece.id, piece.x, piece.y, color, character_url);
+        }
+    });
+
+    socket.on('background', function (data, name, type) {
+        if (socket.room && socket.room.canModify(socket.user) && type.match(/^image\//)) {
+            socket.room.background = { data: data, name: name, type: type }; 
+            server.to(socket.room.id).emit('background', data, name, type);
         }
     });
 });

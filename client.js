@@ -37,13 +37,9 @@ $(function () {
             width = width || borad.width();
             height = height || borad.height();
 
-            console.log(width, height, gridInterval);
-
             var grid = borad.find('.layer-grid').attr('width', width).attr('height', height);
             var ctx = grid[0].getContext('2d');
             
-            console.log(grid.attr('width'), grid.attr('height'));
-
             ctx.strokeStyle = 'rgb(0, 0, 0);';
             ctx.fillStyle = 'rgb(0, 0, 0);';
             ctx.globalAlpha = 0.5;
@@ -66,7 +62,6 @@ $(function () {
                 var c = 'a'.charCodeAt(0) + n % 26;
                 var codes = [];
                 for (var i = 0; i < Math.floor(n / 26) + 1; ++i) {
-                    console.log(i);
                     codes.push(c);
                 }
 
@@ -116,9 +111,20 @@ $(function () {
                 if (value) $('#board .layer-grid').fadeIn();
                 else $('#board .layer-grid').fadeOut();
                 break;
-            case 'background':
-                $('#board').css('background-image', value ? 'url(' + value + ')' : '');
-                break;
+        }
+    });
+
+    socket.on('background', function  (data, name, type) {
+        var board = $('#board');
+        var old = board.data('url');
+
+        var url = window.URL.createObjectURL(new File([data], name, { type: type }));
+        console.log(url);
+
+        board.data('url', url).css('background-image', 'url(' + url + ')');
+
+        if (old) {
+            window.URL.revokeObjectURL(old);
         }
     });
 
@@ -221,11 +227,7 @@ $(function () {
                 if (!file.type.match(/^image\//)) {
                     alert('Unsupported file type: '+ file.type);
                 } else {
-                    var reader = new FileReader();
-                    reader.onloadend = function () {
-                        socket.emit('setting', 'background', reader.result);
-                    };
-                    reader.readAsDataURL(file);
+                    socket.emit('background', file, file.name, file.type);
                 }
             } else {
                 var piece = $('.piece.template:first-child');
