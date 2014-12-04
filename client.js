@@ -88,6 +88,7 @@ $(function () {
         }
     };
 
+    var _defaultTitle = document.title;
     socket.on('setting', function (key, value) {
         var selector = '#input-config-' + key;
         var elm = $(selector);
@@ -95,7 +96,7 @@ $(function () {
         elm.filter('[type=checkbox]').prop('checked', value);
         switch (key) {
             case 'title':
-                document.title = value + ' - Beniimo Board';
+                document.title = value + ' - ' + _defaultTitle;
                 $('.title').text(value);
                 break;
             case 'lock':
