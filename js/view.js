@@ -97,6 +97,7 @@
             var pos = this.getpos(e);
             if (this.target.is('.character')) {
                 $('<a class=modal-trigger>').attr('href', '#modal-add-character').leanModal().trigger('click').remove();
+                $('#lean_overlay').bind('click', onCloseAddCharacter);
 
                 this.target.clone()
                     .addClass('placeholder')
@@ -335,9 +336,19 @@
                 this.remove();
             }).data('pos');
             Socket.emit('add piece', { x: pos.x, y: pos.y, character_url: character_url });
-            $('#modal-add-character .modal_close').trigger('click');
+            $('#lean_overlay').trigger('click');
         });
-    });
+    })
+    var onCloseAddCharacter = function (e) {
+        if ($('#modal-add-character').is(':visible')) {
+            $('#lean_overlay').unbind('click', onCloseAddCharacter).trigger('click');
+            e.preventDefault();
+            $('#board .piece.placeholder').fadeOut(function () {
+                this.remove();
+            });
+        };
+    };
+    $('#modal-add-character .close').bind('click', onCloseAddCharacter);
     $('#character-url').change(function () {
         var character_url = $('#character-url').val();
         $.getJSON(character_url).done(function (data) {

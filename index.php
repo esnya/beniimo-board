@@ -93,7 +93,7 @@ $user = user::getCurrentUser();
                 -->
                 <!-- /.col -->
                 <input type=submit class="btn-flat modal-action" value="<?= _('Add') ?>">
-                <a href="#" class="btn-flat modal-action modal_close"><?= _('Cancel') ?></a>
+                <a href="#" class="btn-flat modal-action close"><?= _('Cancel') ?></a>
             </form>
         </div>
         <!-- /.modal -->
