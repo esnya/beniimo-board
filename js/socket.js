@@ -2,7 +2,7 @@
     var _socket = io.connect('http://' + location.host, {
             transports: ['websocket'],
             reconnectionDelay: 0,
-            timeout: 500
+            timeout: 1000
             });
 
     var _roomId;
