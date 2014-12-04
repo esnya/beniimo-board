@@ -124,7 +124,7 @@ var server = io.sockets.on('connection', function (socket) {
 
             console.log('Pice add: ', id, piece);
 
-            socket.emit('piece', id, piece);
+            server.to(_room.id).emit('piece', id, piece);
         }
     });
 
