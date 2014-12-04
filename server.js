@@ -19,8 +19,8 @@ var Room = function (user) {
     Room.dataFields.forEach(function (key) { this[key] = null; }.bind(this));
 
     this.title = 'Whiteboard';
-    this.width = 600;
-    this.height = 400;
+    this.width = 800;
+    this.height = 800;
     this.gridinterval = 50;
 
     this.addRef();

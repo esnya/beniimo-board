@@ -43,7 +43,7 @@ $user = user::getCurrentUser();
                 <!-- /.row -->
                 <!-- .row -->
                 <div class="row">
-                    <div class="input-field col s12">
+                    <div class="input-field col s12" style="margin-bottom: 0;">
                         <input type=text name=gridinterval id=input-config-gridinterval>
                         <label for=input-config-gridinterval><?= _('Grid Interval') ?></label>
                     </div>
@@ -68,7 +68,7 @@ $user = user::getCurrentUser();
                 <!-- /.row -->
             </form>
             <br>
-            <a class="btn-flat modal_close"><?= _('Close') ?></a>
+            <a href="#" class="btn-flat modal_close modal-action"><?= _('Close') ?></a>
         </div>
         <!-- /.modal -->
 
@@ -76,7 +76,7 @@ $user = user::getCurrentUser();
         <div class="modal" id=modal-add-character>
             <h4><?= _('Add Character') ?></h4>
             <form id=add-character onsubmit="return false">
-                <div class="input-field">
+                <div class="input-field" style="margin-bottom: 0;">
                     <input type=text id=character-url>
                     <label for=character-url><?= _('Character URL') ?></label>
                 </div>
