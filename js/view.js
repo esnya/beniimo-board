@@ -102,6 +102,13 @@
                     .css('transform', 'translate(' + pos.x + 'px,' + pos.y + 'px)')
                     .data('pos', pos)
                     .appendTo('#board');
+            } else if (this.target.is('.remove')) {
+                var remove = $(document.elementFromPoint(e.pageX || e.originalEvent.pageX,
+                            e.pageY || e.originalEvent.pageY));
+                if (remove.is('.piece:not(.template)')) {
+                    var id = remove.data('id');
+                    Socket.emit('remove piece', id);
+                }
             } else {
                 var color = (e.dataTransfer || e.originalEvent.dataTransfer).getData('text/plain');
                 if (color) {
@@ -250,6 +257,12 @@
             _lastId = id;
             ++_z;
         }
+    });
+
+    Socket.on('remove piece', function (id) {
+        $('#board .piece[data-id="' + id + '"]').fadeOut(function () {
+            this.remove();
+        });
     });
 
     $('.zoom').bind({

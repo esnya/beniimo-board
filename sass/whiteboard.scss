@@ -89,11 +89,12 @@ body {
         border-width: 4px;
     }
 
-    &.character {
+    &.character, &.remove {
         width: 30px;
         height: 30px;
 
         i:before {
+            font-size: 16px;
             float: left;
             cursor: move;
             width: 30px;
@@ -101,6 +102,10 @@ body {
             line-height: 30px;
             vertical-align: middle;
         }
+    }
+    &.remove {
+        color: red;
+        border-color: red;
     }
 }
 

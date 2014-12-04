@@ -89,7 +89,9 @@ var server = io.sockets.on('connection', function (socket) {
             });
 
             _room.pieces.forEach(function (piece, id) {
-                socket.emit('piece', id, piece);
+                if (piece) {
+                    socket.emit('piece', id, piece);
+                }
             });
 
             socket.emit('background', _room.background);
@@ -138,6 +140,13 @@ var server = io.sockets.on('connection', function (socket) {
             }
 
             server.to(_room.id).emit('piece', id, send);
+        }
+    });
+
+    socket.on('remove piece', function (id) {
+        if (_room && _room.canModify(socket.user) && id != null && (id in _room.pieces)) {
+            delete _room.pieces[id];
+            server.to(_room.id).emit('remove piece', id);
         }
     });
 
