@@ -38,6 +38,7 @@
                 ctx.stroke();
 
                 ctx.textAlign = 'center';
+                ctx.font = this.interval / 4 + 'px/2 Yu-Githic, sans-serif';
                 for (var x = 0; x < width; x += this.interval) {
                     var n = Math.floor(x / this.interval);
                     var c = 'a'.charCodeAt(0) + n % 26;
