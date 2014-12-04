@@ -72,6 +72,32 @@ $user = user::getCurrentUser();
         </div>
         <!-- /.modal -->
 
+        <!-- .modal -->
+        <div class="modal" id=modal-add-character>
+            <h4><?= _('Add Character') ?></h4>
+            <form id=add-character onsubmit="return false">
+                <div class="input-field">
+                    <input type=text id=character-url>
+                    <label for=character-url><?= _('Character URL') ?></label>
+                </div>
+                <!-- .col -->
+                <!--
+                <div class="col s12">
+                    <div class="card">
+                        <div class="card-content">
+                            <img id=add-character-preview-portrait>
+                            <span class="add-character-preview-name card-title"></span>
+                        </div>
+                    </div>
+                </div>
+                -->
+                <!-- /.col -->
+                <input type=submit class="btn-flat modal-action" value="<?= _('Add') ?>">
+                <a href="#" class="btn-flat modal-action modal_close"><?= _('Cancel') ?></a>
+            </form>
+        </div>
+        <!-- /.modal -->
+
         <nav>
             <!-- .container -->
             <div class="container">
@@ -97,12 +123,8 @@ $user = user::getCurrentUser();
         </main>
         <footer>
             <div>
-                <div draggable=true class="piece template" data-color=white></div><div draggable=true class="piece template" data-color=black></div><div draggable=true class="piece template" data-color=grey></div><div draggable=true class="piece template" data-color=darkgrey></div><div draggable=true class="piece template" data-color=lightgrey></div><div draggable=true class="piece template" data-color=red></div><div draggable=true class="piece template" data-color=blue></div><div draggable=true class="piece template" data-color=green></div><div draggable=true class="piece template" data-color=yellow></div><div draggable=true class="piece template" data-color=pink></div><div draggable=true class="piece template" data-color=lightgreen></div><div draggable=true class="piece template" data-color=lightblue></div>
+                <div draggable=true class="piece template" data-color=white></div><div draggable=true class="piece template" data-color=black></div><div draggable=true class="piece template" data-color=grey></div><div draggable=true class="piece template" data-color=darkgrey></div><div draggable=true class="piece template" data-color=lightgrey></div><div draggable=true class="piece template" data-color=red></div><div draggable=true class="piece template" data-color=blue></div><div draggable=true class="piece template" data-color=green></div><div draggable=true class="piece template" data-color=yellow></div><div draggable=true class="piece template" data-color=pink></div><div draggable=true class="piece template" data-color=lightgreen></div><div draggable=true class="piece template" data-color=lightblue></div><div class="piece template character" draggable=true><i class=mdi-social-person-add></i></div>
             </div>
-            <form id=add-character onsubmit="return false">
-                <input type="url" placeholder="<?= _('Character URL') ?>">
-                <input type="submit" value="<?= _('Add Character') ?>">
-            </form>
         </footer>
         <script src=//code.jquery.com/jquery-2.1.1.min.js></script>
         <script src=//cdn.socket.io/socket.io-1.2.0.js></script>

@@ -93,16 +93,26 @@
             delete this.target;
         },
         drop: function (e) {
-            var color = (e.dataTransfer || e.originalEvent.dataTransfer).getData('text/plain');
-            if (color) {
-                var pos = this.getpos(e);
-                console.log(pos, color);
-                Socket.emit('add piece', {
-                    x: pos.x,
-                    y: pos.y,
-                    color: color
-                });
+            var pos = this.getpos(e);
+            if (this.target.is('.character')) {
+                $('<a class=modal-trigger>').attr('href', '#modal-add-character').leanModal().trigger('click').remove();
+
+                this.target.clone()
+                    .addClass('placeholder')
+                    .css('transform', 'translate(' + pos.x + 'px,' + pos.y + 'px)')
+                    .data('pos', pos)
+                    .appendTo('#board');
+            } else {
+                var color = (e.dataTransfer || e.originalEvent.dataTransfer).getData('text/plain');
+                if (color) {
+                    Socket.emit('add piece', {
+                        x: pos.x,
+                        y: pos.y,
+                        color: color
+                    });
+                }
             }
+            delete this.target;
         }
     };
 
@@ -305,9 +315,22 @@
 
 
     $('#add-character').submit(function () {
-        var character_url = $(this).find('input[type=url]').val();
+        var character_url = $('#character-url').val();
         $.getJSON(character_url).done(function (data) {
-            Socket.emit('add piece', { character_url: character_url });
+            var pos = $('#board .piece.placeholder').fadeOut(function () {
+                this.remove();
+            }).data('pos');
+            Socket.emit('add piece', { x: pos.x, y: pos.y, character_url: character_url });
+            $('#modal-add-character .modal_close').trigger('click');
+        });
+    });
+    $('#character-url').change(function () {
+        var character_url = $('#character-url').val();
+        $.getJSON(character_url).done(function (data) {
+            $('.add-character-preview-name').text(data.name);
+            if (data.portrait) {
+                $('#add-character-preview-portrait').attr('src', data.portrait);
+            }
         });
     });
 
