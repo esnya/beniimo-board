@@ -82,7 +82,7 @@ body {
 
     z-index: 100;
 
-    @include transition(all 0.05s ease-in-out); 
+    //@include transition(all 0.05s ease-in-out); 
 
     &.icon {
         border-width: 4px;

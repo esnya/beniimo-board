@@ -86,17 +86,14 @@ $user = user::getCurrentUser();
         <div id=toolbar>
             <!-- .container -->
             <div class="container">
-                <a href="#" class="btn btn-icon" data-action=zoom data-zoom=0.1><i class="mdi-">+</i></a>
-                <a href="#" class="btn btn-icon" data-action=zoom data-zoom=-0.1><i class="mdi-">-</i></a>
+                <a href="#" class="btn btn-icon zoom" data-zoom=0.1><i class="mdi-">+</i></a>
+                <a href="#" class="btn btn-icon zoom" data-zoom=-0.1><i class="mdi-">-</i></a>
                 <a class="btn btn-icon modal-trigger" href="#modal-config"><i class="mdi-action-settings"></i></a>
             </div>
             <!-- /.container -->
         </div>
         <main>
-            <div id=board>
-                <canvas class="layer layer-grid" width=0 height=0></canvas>
-                <div class="layer layer-pieces"></div>
-            </div>
+            <div id=board><canvas class="layer layer-grid" width=0 height=0></canvas></div>
         </main>
         <footer>
             <div>
@@ -111,6 +108,7 @@ $user = user::getCurrentUser();
         <script src=//cdn.socket.io/socket.io-1.2.0.js></script>
         <script type="text/javascript" src="js/materialize.min.js"></script>
         <script src="js/init.js"></script>
-        <script src=client.js></script>
+        <script src="js/socket.js"></script>
+        <script src="js/view.js"></script>
     </body>
 </html>

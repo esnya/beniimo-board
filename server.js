@@ -23,13 +23,16 @@ var Room = function (user) {
     this.height = 400;
     this.gridinterval = 50;
 
-    console.log('New room: ', this.id);
+    this.addRef();
+    console.log('New room: ', this);
 };
 Room.dataFields = ['title', 'width', 'height', 'lock', 'grid', 'gridinterval'];
 Room.rooms = {};
 Room.getRoom = function (user, room_id) {
     if (room_id && (room_id in Room.rooms)) {
-        return Room.rooms[room_id];
+        var room = Room.rooms[room_id]
+            room.addRef();
+        return room;
     } else {
         var room = new Room(user);
         return (Room.rooms[room.id] = room);
@@ -58,11 +61,12 @@ var io = require('socket.io').listen(8012);
 var server = io.sockets.on('connection', function (socket) {
     console.log('New connection: ' + socket.id);
 
+    var _room;
+
     socket.on('disconnect', function () {
-        var room = socket.room;
-        if (room) {
-            socket.leave(room.id);
-            room.release();
+        socket.leave();
+        if (_room) {
+            _room.release();
         }
     });
 
@@ -72,69 +76,77 @@ var server = io.sockets.on('connection', function (socket) {
 
             socket.user = { id: user.id, name: user.name };
 
-            var room = Room.getRoom(user, room_id);
-            socket.room =room;
-            room.addRef();
-            socket.join(room.id);
+            _room = Room.getRoom(user, room_id);
+            socket.join(_room.id);
 
-            socket.emit('join', room.id);
-            console.log('Joined: ' + room.id);
+            socket.emit('join', _room.id);
+            console.log('Joined: ' + _room.id);
 
-            socket.emit('user', room.user);
+            socket.emit('user', _room.user);
 
             Room.dataFields.forEach(function (key) {
-                socket.emit('setting', key, room[key]);
+                socket.emit(key, _room[key]);
             });
 
-            room.pieces.forEach(function (piece) {
-                socket.emit('piece', piece.id, piece.x, piece.y, piece.color, piece.character_url);
+            _room.pieces.forEach(function (piece, id) {
+                socket.emit('piece', id, piece);
             });
 
-            if (room.background) {
-                socket.emit('background', room.background.data, room.background.name, room.background.type);
-            }
+            socket.emit('background', _room.background);
         }
     });
 
-    socket.on('setting', function (key, value) {
-        var room = socket.room;
-        if (room && room.canModify(socket.user)) {
-            for (var i = 0; i < Room.dataFields.length; ++i) {
-                if (key == Room.dataFields[i]) {
-                    room[key] = value;
-                    server.to(room.id).emit('setting', key, value);
-                    break;
+    Room.dataFields.forEach(function (field) {
+        socket.on(field, function (value) {
+            if (_room && _room.canModify(socket.user)) {
+                _room[field] = value;
+                server.to(_room.id).emit(field, value);
+            }
+        });
+    });
+
+    var limit = function (n, min, max) {
+        return (n < min) ? min : ((n < max) ? n : max);
+    };
+
+    socket.on('add piece', function (data) {
+        if (_room && _room.canModify(socket.user)) {
+            var piece = {
+                x: limit(data.x || 0, 0, _room.width),
+                y: limit(data.y || 0, 0, _room.height),
+                color: data.color || null,
+                character_url: data.character_url || null
+            };
+
+            var id = _room.pieces.push(piece) - 1;
+
+            console.log('Pice add: ', id, piece);
+
+            socket.emit('piece', id, piece);
+        }
+    });
+
+    socket.on('set piece', function (id, data) {
+        if (_room && _room.canModify(socket.user) && id != null && (id in _room.pieces)) {
+            var piece = _room.pieces[id];
+
+            var send = {};
+            for (var key in piece) {
+                if (key in data) {
+                    send[key] = piece[key] = data[key];
                 }
             }
-        }
-    });
 
-    socket.on('piece', function (id, x, y, color, character_url) {
-        var room = socket.room;
-        if (room && room.canModify(socket.user)) {
-
-            var piece = room.pieces[+id];
-
-            if (!piece) {
-                piece = { id: room.pieces.length };
-                room.pieces.push(piece);
-            }
-            piece.x = Math.max(Math.min(x, room.width), 0);
-            piece.y = Math.max(Math.min(y, room.height), 0);
-            if (color) {
-                piece.color = color;
-            }
-            if (character_url) {
-                piece.character_url = character_url;
-            }
-            server.to(room.id).emit('piece', piece.id, piece.x, piece.y, color, character_url);
+            server.to(_room.id).emit('piece', id, send);
         }
     });
 
     socket.on('background', function (data, name, type) {
-        if (socket.room && socket.room.canModify(socket.user) && type.match(/^image\//)) {
-            socket.room.background = { data: data, name: name, type: type }; 
-            server.to(socket.room.id).emit('background', data, name, type);
+        if (_room && _room.canModify(socket.user) && type.match(/^image\//)) {
+            _room.background = { data: data, name: name, type: type }; 
+            server.to(_room.id).emit('background', _room.background);
         }
     });
+
+    socket.emit('hello');
 });
