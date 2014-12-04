@@ -335,7 +335,8 @@
             var pos = $('#board .piece.placeholder').fadeOut(function () {
                 this.remove();
             }).data('pos');
-            Socket.emit('add piece', { x: pos.x, y: pos.y, character_url: character_url });
+            var color = data.color || makeColor(data.name + user.id);
+            Socket.emit('add piece', { x: pos.x, y: pos.y, color: color, character_url: character_url });
             $('#lean_overlay').trigger('click');
         });
     })
