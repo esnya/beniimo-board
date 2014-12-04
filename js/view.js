@@ -56,7 +56,7 @@
 
                 ctx.textBaseline = 'middle';
                 for (var y = 0; y < height; y += this.interval) {
-                    var n = ' ' + Math.floor(y / this.interval) + ' ';
+                    var n = ' ' + Math.floor(y / this.interval + 1) + ' ';
 
                     ctx.textAlign = 'left';
                     ctx.fillText(n, 0, y + this.interval / 2);
