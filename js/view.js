@@ -262,8 +262,10 @@
     });
 
     Socket.on('remove piece', function (id) {
-        $('#board .piece[data-id="' + id + '"]').fadeOut(function () {
-            this.remove();
+        $('#board .piece[data-id="' + id + '"]').removeClass('tooltipped').each(function () {
+        }).fadeOut(function () {
+            $(this).remove();
+            $('.material-tooltip:visible').remove();
         });
     });
 
