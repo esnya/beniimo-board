@@ -9,8 +9,8 @@ $user = user::getCurrentUser();
         <meta charset=UTF-8>
         <title><?= _('Beniimo Board') ?></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-        <link rel="stylesheet" href="css/materialize.min.css">
-        <link rel="stylesheet" href="css/whiteboard.min.css">
+        <link rel="stylesheet" href="lib/materialize/css/materialize.css">
+        <link rel="stylesheet" href="css/board.css">
         <script>
             var user = { id: '<?= $user->userid ?>', name: '<?= $user->name ?>' };
         </script>
@@ -98,7 +98,7 @@ $user = user::getCurrentUser();
         </div>
         <!-- /.modal -->
 
-        <nav>
+        <nav class="green lighten-1">
             <!-- .container -->
             <div class="container">
                 <!-- .nav-wrapper -->
@@ -126,9 +126,9 @@ $user = user::getCurrentUser();
                 <div draggable=true class="piece template" data-color=white></div><div draggable=true class="piece template" data-color=black></div><div draggable=true class="piece template" data-color=grey></div><div draggable=true class="piece template" data-color=darkgrey></div><div draggable=true class="piece template" data-color=lightgrey></div><div draggable=true class="piece template" data-color=red></div><div draggable=true class="piece template" data-color=blue></div><div draggable=true class="piece template" data-color=green></div><div draggable=true class="piece template" data-color=yellow></div><div draggable=true class="piece template" data-color=pink></div><div draggable=true class="piece template" data-color=lightgreen></div><div draggable=true class="piece template" data-color=lightblue></div><div class="piece template character" draggable=true><i class=mdi-social-person-add></i></div><div class="piece template remove" draggable=true><i class=mdi-content-remove></i></div>
             </div>
         </footer>
-        <script src=//code.jquery.com/jquery-2.1.1.min.js></script>
-        <script src=//cdn.socket.io/socket.io-1.2.0.js></script>
-        <script type="text/javascript" src="js/materialize.min.js"></script>
+        <script src="lib/jquery/jquery.js"></script>
+        <script src="lib/socket.io-client/socket.io.js"></script>
+        <script src="lib/materialize/js/materialize.js"></script>
         <script src="js/init.js"></script>
         <script src="js/socket.js"></script>
         <script src="js/view.js"></script>

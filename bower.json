@@ -1,0 +1,33 @@
+{
+  "name": "beniimo-board",
+  "version": "0.0.1",
+  "authors": [
+    "ukatama"
+  ],
+  "description": "Beniimo TRPG whiteboard system",
+  "main": "index.php",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "materialize": "*",
+    "jquery": "~2.1.1",
+    "socket.io-client": "~1.2.1"
+  },
+  "exportsOverride": {
+      "materialize": {
+          "css": "bin/*.css",
+          "js": "bin/*.js",
+          "font/material-design-icons": "font/material-design-icons/*.*",
+          "font/roboto": "font/roboto/*.*"
+      },
+      "socket.io-client": {
+          "": "socket.io.js"
+      }
+  }
+}
