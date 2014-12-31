@@ -58,6 +58,19 @@ Room.prototype.canModify = function (user) {
 
 ////////// Server //////////
 var io = require('socket.io').listen(8041, { path: '/board/socket.io' });
+
+io.use(function (socket, next) {
+    var user_id = socket.request.headers['username'];
+
+    socket.user = {id: user_id, name: user_id};
+
+    if (user_id) {
+        next();
+    } else {
+        next(new Error);
+    }
+});
+
 var server = io.sockets.on('connection', function (socket) {
     console.log('New connection: ' + socket.id);
 
@@ -70,11 +83,10 @@ var server = io.sockets.on('connection', function (socket) {
         }
     });
 
-    socket.on('join', function (user, room_id) {
+    socket.on('join', function (room_id) {
+        var user = socket.user;
         if (user && user.id && user.name) {
             console.log('Join request: ' + socket.id + '@' + user.id + ' -> ' + room_id);
-
-            socket.user = { id: user.id, name: user.name };
 
             _room = Room.getRoom(user, room_id);
             socket.join(_room.id);
@@ -157,5 +169,5 @@ var server = io.sockets.on('connection', function (socket) {
         }
     });
 
-    socket.emit('hello');
+    socket.emit('hello', socket.user);
 });

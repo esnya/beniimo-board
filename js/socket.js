@@ -11,7 +11,11 @@
 
     _socket.on('connect', function () {
         console.log('Connected');
-        Socket.emit('join', user, location.hash);
+        Socket.emit('join', location.hash);
+    });
+
+    _socket.on('hello', function (user_) {
+        user = user_;
     });
 
     _socket.on('join', function (room_id) {
@@ -35,6 +39,6 @@
 
     /// 
     Socket.reconnect = function () {
-        _socket.emit('join', user, location.hash);
+        _socket.emit('join', location.hash);
     };
 })(this.Socket || (this.Socket = {}));

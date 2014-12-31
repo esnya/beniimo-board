@@ -1,8 +1,3 @@
-<?php 
-require_once(dirname(dirname(__FILE__)) . '/locale/locale.php');
-require_once('/usr/share/php/takiri/user.inc.php');
-$user = user::getCurrentUser();
-?>
 <!DOCTYPE html>
 <html lang=ja>
     <head>
@@ -12,7 +7,7 @@ $user = user::getCurrentUser();
         <link rel="stylesheet" href="lib/materialize/css/materialize.css">
         <link rel="stylesheet" href="css/board.css">
         <script>
-            var user = { id: '<?= $user->userid ?>', name: '<?= $user->name ?>' };
+            var user = {id: 'id', name: 'name'};
         </script>
     </head>
     <body>
