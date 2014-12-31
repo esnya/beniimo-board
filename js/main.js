@@ -164,7 +164,7 @@
                 getCharacter($scope.addingPiece.character_url).then(function (data) {
                     $scope.addingPiece.color = makeColor(data.name + $scope.user.id);
                     socket.emit('add piece', $scope.addingPiece);
-                    $('#lean-overlay').trigger('click');
+                    $('#lean-overlay, #lean_overlay').trigger('click');
                 });
             };
             $scope.removePiece = function (e, data, piece) {
