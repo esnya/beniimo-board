@@ -1,16 +1,14 @@
+<?php require_once(dirname(dirname(__FILE__)) . '/locale/locale.php') ?>
 <!DOCTYPE html>
-<html lang=ja>
+<html lang=ja ng-app=BeniimoBoardApp>
     <head>
         <meta charset=UTF-8>
         <title><?= _('Beniimo Board') ?></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <link rel="stylesheet" href="lib/materialize/css/materialize.css">
         <link rel="stylesheet" href="css/board.css">
-        <script>
-            var user = {id: 'id', name: 'name'};
-        </script>
     </head>
-    <body>
+    <body ng-controller=BeniimoBoardCtrl ng-mousemove=move($event) ng-mouseup=endMove($event)>
         <!-- .modal -->
         <div id=modal-config class="modal">
             <h4><?= _('Board Configuration') ?></h4>
@@ -19,7 +17,7 @@
                 <!-- .row -->
                 <div class="row">
                     <div class="input-field col s12">
-                        <input type=text name=title id=input-config-title>
+                        <input type=text ng-change="change('title')" ng-model=room.title id=input-config-title>
                         <label for=input-config-title><?= _('Title') ?></label>
                     </div>
                 </div>
@@ -27,19 +25,31 @@
                 <!-- .row -->
                 <div class="row">
                     <div class="input-field col s6">
-                        <input type=text name=width id=input-config-width>
+                        <input type=text ng-change="change('width')" ng-model=room.width id=input-config-width>
                         <label for=input-config-width><?= _('Width') ?></label>
                     </div>
                     <div class="input-field col s6">
-                        <input type=text name=height id=input-config-height>
+                        <input type=text ng-change="change('height')" ng-model=room.height id=input-config-height>
                         <label for=input-config-height><?= _('Height') ?></label>
+                    </div>
+                </div>
+                <!-- /.row -->
+                <!-- .row -->
+                <div class="row" my-drop=dropBackground(files)>
+                    <div class="input-field col s8">
+                        <input type=file id=input-config-background>
+                        <label for=input-config-background class=active><?= _('Background Image') ?></label>
+                    </div>
+                    <div class="input-field text col s4">
+                        <button ng-click="formBackground()" onclick="return false"><?= _('Apply') ?></button>
+                        <?= _('or D&D Here') ?>
                     </div>
                 </div>
                 <!-- /.row -->
                 <!-- .row -->
                 <div class="row">
                     <div class="input-field col s12" style="margin-bottom: 0;">
-                        <input type=text name=gridinterval id=input-config-gridinterval>
+                        <input type=text ng-change="change('gridinterval')" ng-model=room.gridinterval id=input-config-gridinterval>
                         <label for=input-config-gridinterval><?= _('Grid Interval') ?></label>
                     </div>
                 </div>
@@ -49,13 +59,13 @@
                 <div class="row">
                     <div class="col s3">
                         <p>
-                            <input type=checkbox name=lock id=input-config-lock />
+                            <input type=checkbox ng-change="change('lock')" ng-model=room.lock id=input-config-lock />
                             <label for=input-config-lock><?= _('Lock') ?></label>
                         </p>
                     </div>
                     <div class="col s3">
                         <p>
-                            <input type=checkbox name=grid id=input-config-grid />
+                            <input type=checkbox ng-change="change('grid')" ng-model=room.grid id=input-config-grid />
                             <label for=input-config-grid><?= _('Grid') ?></label>
                         </p>
                     </div>
@@ -63,32 +73,20 @@
                 <!-- /.row -->
             </form>
             <br>
-            <a href="#" class="btn-flat modal_close modal-action"><?= _('Close') ?></a>
+            <a href="#" class="btn-flat modal-close modal-action"><?= _('Close') ?></a>
         </div>
         <!-- /.modal -->
 
         <!-- .modal -->
         <div class="modal" id=modal-add-character>
             <h4><?= _('Add Character') ?></h4>
-            <form id=add-character onsubmit="return false">
+            <form id=add-character onsubmit="return false" ng-submit=addCharacter()>
                 <div class="input-field" style="margin-bottom: 0;">
-                    <input type=text id=character-url>
+                    <input type=text id=character-url ng-model=addingPiece.character_url>
                     <label for=character-url><?= _('Character URL') ?></label>
                 </div>
-                <!-- .col -->
-                <!--
-                <div class="col s12">
-                    <div class="card">
-                        <div class="card-content">
-                            <img id=add-character-preview-portrait>
-                            <span class="add-character-preview-name card-title"></span>
-                        </div>
-                    </div>
-                </div>
-                -->
-                <!-- /.col -->
                 <input type=submit class="btn-flat modal-action" value="<?= _('Add') ?>">
-                <a href="#" class="btn-flat modal-action close"><?= _('Cancel') ?></a>
+                <a href="#" class="btn-flat modal-action modal-close"><?= _('Cancel') ?></a>
             </form>
         </div>
         <!-- /.modal -->
@@ -98,7 +96,8 @@
             <div class="container">
                 <!-- .nav-wrapper -->
                 <div class="nav-wrapper">
-                    <a class="brand-logo title" href="#"><?= _('Beniimo Board') ?></a>
+                    <a class="brand-logo" ng-href=room.id ng-hide=room><?= _('Beniimo Board') ?></a>
+                    <a class="brand-logo" ng-href=room.id ng-show=room ng-bind=room.title></a>
                 </div>
                 <!-- /.nav-wrapper -->
             </div>
@@ -107,25 +106,89 @@
         <div id=toolbar>
             <!-- .container -->
             <div class="container">
-                <a href="#" class="btn btn-icon zoom" data-zoom=0.1><i class="mdi-">+</i></a>
-                <a href="#" class="btn btn-icon zoom" data-zoom=-0.1><i class="mdi-">-</i></a>
+                <a href="#" class="btn btn-icon" onclick="return false" ng-click="changeZoom(0.1)"><i class="mdi-">+</i></a>
+                <a href="#" class="btn btn-icon" onclick="return false" ng-click="changeZoom(-0.1)"><i class="mdi-">-</i></a>
                 <a class="btn btn-icon modal-trigger" href="#modal-config"><i class="mdi-action-settings"></i></a>
             </div>
             <!-- /.container -->
         </div>
-        <main>
-            <div id=board><canvas class="layer layer-grid" width=0 height=0></canvas></div>
-        </main>
-        <footer>
-            <div>
-                <div draggable=true class="piece template" data-color=white></div><div draggable=true class="piece template" data-color=black></div><div draggable=true class="piece template" data-color=grey></div><div draggable=true class="piece template" data-color=darkgrey></div><div draggable=true class="piece template" data-color=lightgrey></div><div draggable=true class="piece template" data-color=red></div><div draggable=true class="piece template" data-color=blue></div><div draggable=true class="piece template" data-color=green></div><div draggable=true class="piece template" data-color=yellow></div><div draggable=true class="piece template" data-color=pink></div><div draggable=true class="piece template" data-color=lightgreen></div><div draggable=true class="piece template" data-color=lightblue></div><div class="piece template character" draggable=true><i class=mdi-social-person-add></i></div><div class="piece template remove" draggable=true><i class=mdi-content-remove></i></div>
+        <div ng-hide="room" class=fill>
+            <div class="preloader-wrapper big active">
+                <div class="spinner-layer spinner-blue">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                        </div><div class="gap-patch">
+                        <div class="circle"></div>
+                        </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+
+                <div class="spinner-layer spinner-red">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                        </div><div class="gap-patch">
+                        <div class="circle"></div>
+                        </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+
+                <div class="spinner-layer spinner-yellow">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                        </div><div class="gap-patch">
+                        <div class="circle"></div>
+                        </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+
+                <div class="spinner-layer spinner-green">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                        </div><div class="gap-patch">
+                        <div class="circle"></div>
+                        </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
             </div>
+            <p>Connecting...</p>
+        </div>
+        <main>
+            <div ng-show=room id=board style="transform: scale({{zoom}}); width: {{room.width}}px; height: {{room.height}}px;" my-drop="drop($event, data, files)">
+                <canvas class="layer layer-grid" width={{room.width}} height={{room.height}} ng-show=room.grid></canvas>
+                <div
+                    class="piece"
+                    style="
+                    border-color: {{pieceBorder(piece)}};
+                    background-color: {{piece.color}};
+                    background-image: {{piece.icon}};
+                    z-index: {{piece.z}};
+                    transform: translate({{piece.x}}px,{{piece.y}}px);
+                    "
+                    ng-repeat="piece in pieces"
+                    ng-mousedown="startMove($event, piece)"
+                    my-drop="removePiece($event, data, piece)"
+                    >
+                </div>
+            </div>
+        </main>
+        <footer class="white">
+            <div>
+                <div class="piece {{piece.type}}" style="background-color: {{piece.color}};" ng-repeat="piece in templates" my-draggable={{piece}}>
+                    <i ng-if="piece.type == 'remove'" class=mdi-content-remove></i>
+                    <i ng-if="piece.type == 'character'" class=mdi-social-person-add></i>
+                </div>
+           </div>
         </footer>
         <script src="lib/jquery/jquery.js"></script>
         <script src="lib/socket.io-client/socket.io.js"></script>
         <script src="lib/materialize/js/materialize.js"></script>
+        <script src="lib/angular/angular.js"></script>
+        <script src="lib/angular-socket-io/socket.js"></script>
         <script src="js/init.js"></script>
-        <script src="js/socket.js"></script>
-        <script src="js/view.js"></script>
+        <script src="js/main.js"></script>
     </body>
 </html>
