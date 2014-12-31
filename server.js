@@ -57,7 +57,7 @@ Room.prototype.canModify = function (user) {
 };
 
 ////////// Server //////////
-var io = require('socket.io').listen(8012);
+var io = require('socket.io').listen(8041, { path: '/board/socket.io' });
 var server = io.sockets.on('connection', function (socket) {
     console.log('New connection: ' + socket.id);
 

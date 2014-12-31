@@ -1,5 +1,6 @@
 (function (Socket) {
     var _socket = io.connect('http://' + location.host, {
+            path: '/board/socket.io',
             transports: ['websocket'],
             reconnectionDelay: 0,
             timeout: 1000
