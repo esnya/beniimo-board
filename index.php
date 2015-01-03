@@ -7,6 +7,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <link rel="stylesheet" href="lib/materialize/css/materialize.css">
         <link rel="stylesheet" href="css/board.css">
+        <style>
+            [ng-cloak] {
+                display: none !impoartant;
+            }
+        </style>
     </head>
     <body ng-controller=BeniimoBoardCtrl ng-mousemove=move($event) ng-mouseup=endMove($event)>
         <!-- .modal -->
@@ -157,8 +162,8 @@
             <p>Connecting...</p>
         </div>
         <main>
-            <div ng-show=room id=board style="transform: scale({{zoom}}); width: {{room.width}}px; height: {{room.height}}px; background-image: url({{background_url}});" my-drop="drop($event, data, files)">
-                <canvas class="layer layer-grid" width={{room.width}} height={{room.height}} ng-show=room.grid></canvas>
+            <div ng-show=room ng-cloak id=board style="transform: scale({{zoom}}); width: {{room.width}}px; height: {{room.height}}px; background-image: url({{background_url}});" my-drop="drop($event, data, files)">
+                <canvas class="layer layer-grid" width={{room.width}} height={{room.height}} ng-show=room.grid ng-cloak></canvas>
                 <div
                     class="piece"
                     style="
