@@ -113,6 +113,7 @@
             <div class="container">
                 <a href="#" class="btn btn-icon" onclick="return false" ng-click="changeZoom(0.1)"><i class="mdi-">+</i></a>
                 <a href="#" class="btn btn-icon" onclick="return false" ng-click="changeZoom(-0.1)"><i class="mdi-">-</i></a>
+                <a class="btn btn-icon" my-drop=dropBackground(files)><i class="mdi-maps-terrain"></i></a>
                 <a class="btn btn-icon modal-trigger" href="#modal-config"><i class="mdi-action-settings"></i></a>
             </div>
             <!-- /.container -->
