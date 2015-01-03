@@ -326,5 +326,12 @@
                     }
                 });
             });
+            socket.on('background', function (background) {
+                if ($scope.background_url) {
+                    URL.revokeObjectURL($scope.background_url);
+                }
+                var file = new File([background.data], background.name, {type: background.type})
+                $scope.background_url = URL.createObjectURL(file);
+            });
         });
 })(angular);

@@ -157,7 +157,7 @@
             <p>Connecting...</p>
         </div>
         <main>
-            <div ng-show=room id=board style="transform: scale({{zoom}}); width: {{room.width}}px; height: {{room.height}}px;" my-drop="drop($event, data, files)">
+            <div ng-show=room id=board style="transform: scale({{zoom}}); width: {{room.width}}px; height: {{room.height}}px; background-image: url({{background_url}});" my-drop="drop($event, data, files)">
                 <canvas class="layer layer-grid" width={{room.width}} height={{room.height}} ng-show=room.grid></canvas>
                 <div
                     class="piece"
