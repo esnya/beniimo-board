@@ -30,6 +30,35 @@
                                       timeout: 1000,
                                   })
             });
+        }).factory('draw', function () {
+            var canvas = document.getElementById('drawingcanvas');
+            var ctx = canvas.getContext('2d');
+            return {
+                init: function (color, x, y) {
+                    ctx.strokeStyle = color;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                },
+                line: function (x, y) {
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                },
+                erase: function (x, y) {
+                    ctx.clearRect(x - 4, y - 4, 8, 8);
+                },
+                getData: function () {
+                    var img = ctx.getImageData(0, 0, canvas.getAttribute('width'), canvas.getAttribute('height'));
+                    return new Blob([img.data.buffer], {type: 'image/png'});
+                },
+                setData: function (data) {
+                    var org = ctx.getImageData(0, 0, canvas.getAttribute('width'), canvas.getAttribute('height'));
+                    var d = ctx.createImageData(org);
+                    d.data.set(new Uint8ClampedArray(data));
+                    ctx.putImageData(d, 0, 0);
+                }
+            };
         }).directive('myDraggable', function () {
             return {
                 restrict: 'A',
@@ -47,6 +76,30 @@
                         element.removeAttr('draggable');
                     });
                 }
+            };
+        }).directive('myColorpicker', function () {
+            return function (scope, element, attr) {
+                var picker = $('<input type=color>').bind('change', function () {
+                    setColor();
+                });
+
+                var setColor = function () {
+                    $(element).css('background-color', picker.val()).attr('value', picker.val());
+                    scope[attr.myColorpicker] = picker.val();
+                };
+                setColor();
+
+                var click = function (e) {
+                    e.preventDefault();
+                    picker.trigger('click');
+                };
+
+                element.bind('click', click);
+
+                element.on('$destory', function () {
+                    element.unbind('click', click);
+                    picker.remove();
+                });
             };
         }).factory('getCharacter', function ($q, $http) {
             var character_cache = {};
@@ -116,12 +169,14 @@
                     });
                 }
             };
-        }).controller('BeniimoBoardCtrl', function ($scope, socket, getCharacter) {
+        }).controller('BeniimoBoardCtrl', function ($scope, $timeout, socket, getCharacter, draw) {
             $scope.defaultTitle = document.title;
 
             $scope.zoom = 0.8;
             $scope.pieces = {};
             $scope.templates = [];
+            $scope.mode = 'place';
+            $scope.drawnTime = 0;
 
             ['white', 'black', 'gray', 'darkgray', 'red', 'green', 'yellow', 'blue'].forEach(function (color) {
                 $scope.templates.push({
@@ -175,11 +230,13 @@
             };
             $scope.startMove = function (e, piece) {
                 e.preventDefault();
-                $scope.moving = piece;
-                $scope.offset = {
-                    x: (e.layerX || e.originalEvent.layerX),
-                    y: (e.layerY || e.originalEvent.layerY)
-                };
+                if ($scope.mode == 'place') {
+                    $scope.moving = piece;
+                    $scope.offset = {
+                        x: (e.layerX || e.originalEvent.layerX),
+                        y: (e.layerY || e.originalEvent.layerY)
+                    };
+                }
             };
             $scope.move = function (e) {
                 if ($scope.moving) {
@@ -208,6 +265,48 @@
                 if (files.length >= 1) {
                     var file = files[0];
                     socket.emit('background', file, file.name, file.type);
+                }
+            };
+            $scope.startDraw = function (e) {
+                e.preventDefault();
+                if ($scope.mode == 'edit' || $scope.mode == 'erase') {
+                    $scope.editing = true;
+                    console.log($scope.color);
+                    draw.init(
+                            $scope.color,
+                            e.layerX || e.originalEvent.layerX,
+                            e.layerY || e.originalEvent.layerY
+                        );
+                }
+            };
+            $scope.draw = function (e) {
+                e.preventDefault();
+                if ($scope.editing) {
+                    if ($scope.mode == 'edit') {
+                        draw.line(
+                                e.layerX || e.originalEvent.layerX,
+                                e.layerY || e.originalEvent.layerY
+                                );
+                    } else if ($scope.mode == 'erase') {
+                        draw.erase(
+                                e.layerX || e.originalEvent.layerX,
+                                e.layerY || e.originalEvent.layerY
+                                );
+                    }
+                }
+            };
+            $scope.endDraw = function (e) {
+                e.preventDefault();
+                if ($scope.mode == 'edit' || $scope.mode == 'erase') {
+                    $scope.editing = false;
+                    $scope.drawnTime = Date.now();
+
+                    if (!$scope.drawTimer) {
+                        $scope.drawTimer = $timeout(function () {
+                            socket.emit('draw', draw.getData(), $scope.drawnTime);
+                            $scope.drawTimer = null;
+                        }, 1500);
+                    }
                 }
             };
 
@@ -330,8 +429,18 @@
                 if ($scope.background_url) {
                     URL.revokeObjectURL($scope.background_url);
                 }
-                var file = new File([background.data], background.name, {type: background.type})
-                $scope.background_url = URL.createObjectURL(file);
+                if (background) {
+                    var file = new File([background.data], background.name, {type: background.type});
+                    $scope.background_url = URL.createObjectURL(file);
+                } else {
+                    $scope.background_url = null;
+                }
+            });
+            socket.on('draw', function (data, time) {
+                if (time > $scope.drawnTime) {
+                    $scope.drawnTime = time;
+                    draw.setData(data);
+                }
             });
         });
 })(angular);

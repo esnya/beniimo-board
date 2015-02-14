@@ -111,10 +111,14 @@
         <div id=toolbar>
             <!-- .container -->
             <div class="container">
-                <a href="#" class="btn btn-icon" onclick="return false" ng-click="changeZoom(0.1)"><i class="mdi-">+</i></a>
-                <a href="#" class="btn btn-icon" onclick="return false" ng-click="changeZoom(-0.1)"><i class="mdi-">-</i></a>
+                <a href="#" class="btn btn-icon" onclick="return false" ng-click="changeZoom(-0.1)"><i class="mdi-navigation-unfold-less"></i></a>
+                <a href="#" class="btn btn-icon" onclick="return false" ng-click="changeZoom(0.1)"><i class="mdi-navigation-unfold-more"></i></a>
                 <a class="btn btn-icon" my-drop=dropBackground(files)><i class="mdi-maps-terrain"></i></a>
                 <a class="btn btn-icon modal-trigger" href="#modal-config"><i class="mdi-action-settings"></i></a>
+                <button class="btn btn-icon" ng-click="mode = 'place'" ng-class="(mode == 'place') ? 'green' : 'grey'"><i class=mdi-maps-place></i></button>
+                <button class="btn btn-icon" ng-click="mode = 'edit'" ng-class="(mode == 'edit') ? 'green' : 'grey'"><i class=mdi-image-edit></i></button>
+                <button class="btn btn-icon" ng-click="mode = 'erase'" ng-class="(mode == 'erase') ? 'green' : 'grey'" style="transform: rotateZ(180deg); transform-origin: center center;"><i class=mdi-image-edit></i></button>
+                <button my-colorpicker=color class="btn btn-icon"><i class=mdi-image-color-lens></i></button>
             </div>
             <!-- /.container -->
         </div>
@@ -163,7 +167,8 @@
             <p>Connecting...</p>
         </div>
         <main>
-            <div ng-show=room ng-cloak id=board style="transform: scale({{zoom}}); width: {{room.width}}px; height: {{room.height}}px; background-image: url({{background_url}});" my-drop="drop($event, data, files)">
+            <div ng-show=room ng-cloak id=board style="transform: scale({{zoom}}); width: {{room.width}}px; height: {{room.height}}px; background-image: url({{background_url}});" my-drop="drop($event, data, files)" ng-mousedown=startDraw($event) ng-mousemove=draw($event) ng-mouseup=endDraw($event)>
+                <canvas class="layer layer-draw" id=drawingcanvas width={{room.width}} height={{room.height}} ng-cloak ></canvas>
                 <canvas class="layer layer-grid" width={{room.width}} height={{room.height}} ng-show=room.grid ng-cloak></canvas>
                 <div
                     class="piece"

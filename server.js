@@ -107,6 +107,10 @@ var server = io.sockets.on('connection', function (socket) {
             });
 
             socket.emit('background', _room.background);
+
+            if (_room.draw) {
+                socket.emit('draw', _room.draw.data, _room.draw.time);
+            }
         }
     });
 
@@ -166,6 +170,13 @@ var server = io.sockets.on('connection', function (socket) {
         if (_room && _room.canModify(socket.user) && type.match(/^image\//)) {
             _room.background = { data: data, name: name, type: type }; 
             server.to(_room.id).emit('background', _room.background);
+        }
+    });
+
+    socket.on('draw', function (data, time) {
+        if (_room && _room.canModify(socket.user)) {
+            _room.draw = {data: data, time: time};
+            server.to(_room.id).emit('draw', data, time);
         }
     });
 

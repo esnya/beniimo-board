@@ -52,7 +52,7 @@ body {
 
             z-index: 50;
 
-            .piece {
+            .piece,.layer {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -170,4 +170,8 @@ input[type="file"] {
         height: 2rem;
         padding-top: 1.5rem;
     }
+}
+
+.btn.white, .btn.green {
+    transition: all .4s;
 }
