@@ -233,8 +233,8 @@
                 if ($scope.mode == 'place') {
                     $scope.moving = piece;
                     $scope.offset = {
-                        x: (e.layerX || e.originalEvent.layerX),
-                        y: (e.layerY || e.originalEvent.layerY)
+                        x: (e.layerX || e.originalEvent.layerX) * 0,
+                        y: (e.layerY || e.originalEvent.layerY) * 0
                     };
                 }
             };
