@@ -24,7 +24,7 @@
             return socketFactory({
                 ioSocket: io.connect('http://'+ location.host,
                                   {
-                                      path: '/board/socket.io',
+                                      //path: '/board/socket.io',
                                       transports: ['websocket'],
                                       reconnectionDelay: 0,
                                       timeout: 1000,

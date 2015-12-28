@@ -57,18 +57,23 @@ Room.prototype.canModify = function (user) {
 };
 
 ////////// Server //////////
-var io = require('socket.io').listen(8041, { path: '/board/socket.io' });
+var express = require('express');
+var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+app.use(express.static('.'));
 
 io.use(function (socket, next) {
-    var user_id = socket.request.headers['username'];
+    var user_id = socket.request.headers['username'] || 'guest';
 
     socket.user = {id: user_id, name: user_id};
 
-    if (user_id) {
-        next();
-    } else {
-        next(new Error);
-    }
+    next();
+});
+
+http.listen(80, function() {
+    console.log('Listening on *:80');
 });
 
 var server = io.sockets.on('connection', function (socket) {
