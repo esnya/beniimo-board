@@ -1,9 +1,8 @@
-<?php require_once(dirname(dirname(__FILE__)) . '/locale/locale.php') ?>
 <!DOCTYPE html>
 <html lang=ja ng-app=BeniimoBoardApp>
     <head>
         <meta charset=UTF-8>
-        <title><?= _('Beniimo Board') ?></title>
+        <title>Beniimo Board</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <link rel="stylesheet" href="lib/materialize/css/materialize.css">
         <link rel="stylesheet" href="css/board.css">
@@ -16,14 +15,14 @@
     <body ng-controller=BeniimoBoardCtrl ng-mousemove=move($event) ng-mouseup=endMove($event)>
         <!-- .modal -->
         <div id=modal-config class="modal">
-            <h4><?= _('Board Configuration') ?></h4>
+            <h4>Board Configuration</h4>
             <br>
             <form id=form-config onsubmit="return false">
                 <!-- .row -->
                 <div class="row">
                     <div class="input-field col s12">
                         <input type=text ng-change="change('title')" ng-model=room.title id=input-config-title>
-                        <label for=input-config-title><?= _('Title') ?></label>
+                        <label for=input-config-title>Title</label>
                     </div>
                 </div>
                 <!-- /.row -->
@@ -31,11 +30,11 @@
                 <div class="row">
                     <div class="input-field col s6">
                         <input type=text ng-change="change('width')" ng-model=room.width id=input-config-width>
-                        <label for=input-config-width><?= _('Width') ?></label>
+                        <label for=input-config-width>Width</label>
                     </div>
                     <div class="input-field col s6">
                         <input type=text ng-change="change('height')" ng-model=room.height id=input-config-height>
-                        <label for=input-config-height><?= _('Height') ?></label>
+                        <label for=input-config-height>Height</label>
                     </div>
                 </div>
                 <!-- /.row -->
@@ -43,11 +42,11 @@
                 <div class="row" my-drop=dropBackground(files)>
                     <div class="input-field col s8">
                         <input type=file id=input-config-background>
-                        <label for=input-config-background class=active><?= _('Background Image') ?></label>
+                        <label for=input-config-background class=active>Background Image</label>
                     </div>
                     <div class="input-field text col s4">
-                        <button ng-click="formBackground()" onclick="return false"><?= _('Apply') ?></button>
-                        <?= _('or D&D Here') ?>
+                        <button ng-click="formBackground()" onclick="return false">Apply</button>
+                        or D&D Here
                     </div>
                 </div>
                 <!-- /.row -->
@@ -55,7 +54,7 @@
                 <div class="row">
                     <div class="input-field col s12" style="margin-bottom: 0;">
                         <input type=text ng-change="change('gridinterval')" ng-model=room.gridinterval id=input-config-gridinterval>
-                        <label for=input-config-gridinterval><?= _('Grid Interval') ?></label>
+                        <label for=input-config-gridinterval>Grid Interval</label>
                     </div>
                 </div>
                 <!-- /.row -->
@@ -65,33 +64,33 @@
                     <div class="col s3">
                         <p>
                             <input type=checkbox ng-change="change('lock')" ng-model=room.lock id=input-config-lock />
-                            <label for=input-config-lock><?= _('Lock') ?></label>
+                            <label for=input-config-lock>Lock</label>
                         </p>
                     </div>
                     <div class="col s3">
                         <p>
                             <input type=checkbox ng-change="change('grid')" ng-model=room.grid id=input-config-grid />
-                            <label for=input-config-grid><?= _('Grid') ?></label>
+                            <label for=input-config-grid>Grid</label>
                         </p>
                     </div>
                 </div>
                 <!-- /.row -->
             </form>
             <br>
-            <a href="#" class="btn-flat modal-close modal-action"><?= _('Close') ?></a>
+            <a href="#" class="btn-flat modal-close modal-action">Close</a>
         </div>
         <!-- /.modal -->
 
         <!-- .modal -->
         <div class="modal" id=modal-add-character>
-            <h4><?= _('Add Character') ?></h4>
+            <h4>Add Character</h4>
             <form id=add-character onsubmit="return false" ng-submit=addCharacter()>
                 <div class="input-field" style="margin-bottom: 0;">
                     <input type=text id=character-url ng-model=addingPiece.character_url>
-                    <label for=character-url><?= _('Character URL') ?></label>
+                    <label for=character-url>Character URL</label>
                 </div>
-                <input type=submit class="btn-flat modal-action" value="<?= _('Add') ?>">
-                <a href="#" class="btn-flat modal-action modal-close"><?= _('Cancel') ?></a>
+                <input type=submit class="btn-flat modal-action" value="Add">
+                <a href="#" class="btn-flat modal-action modal-close">Cancel</a>
             </form>
         </div>
         <!-- /.modal -->
@@ -101,7 +100,7 @@
             <div class="container">
                 <!-- .nav-wrapper -->
                 <div class="nav-wrapper">
-                    <a class="brand-logo" ng-href=room.id ng-hide=room><?= _('Beniimo Board') ?></a>
+                    <a class="brand-logo" ng-href=room.id ng-hide=room>Beniimo Board</a>
                     <a class="brand-logo" ng-href=room.id ng-show=room ng-bind=room.title></a>
                 </div>
                 <!-- /.nav-wrapper -->
