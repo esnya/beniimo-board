@@ -1,2 +1,2 @@
 # beniimo-board
-Web application of simple whiteboard.
+Simple whiteboard web application.
